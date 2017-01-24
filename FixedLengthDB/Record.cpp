@@ -15,6 +15,12 @@ class Record {
 public:
     Record() {}
     
+    Record(string univName) {
+        institutionName = univName;
+        replace(univName.begin(), univName.end(), '_', ' ');
+        primaryKey = univName;
+    }
+    
     Record(int recordNum, string institution, int satVerb25, int satVerb75, int satMath25, int satMath75, int satSub, int numEnrl) {
         recordNumber = recordNum;
         primaryKey = institution;

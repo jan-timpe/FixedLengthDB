@@ -60,9 +60,9 @@ public:
             throw invalid_argument("Database not open");
         }
         
-        ifstream db(dbFileName.c_str());
+        fstream db(dbFileName.c_str());
         
-        Record rec = Record(0, "", 0, 0, 0, 0, 0, 0);
+        Record rec = Record();
         bool found = binarySearch(db, universityName, rec);
         db.close();
         
@@ -82,10 +82,10 @@ public:
         cout << endl;
         
         int records = 0;
-        ifstream db(dbFileName.c_str());
+        fstream db(dbFileName.c_str());
         
         for(int line = 0; (line < numRecords && records < 10); line++) {
-            Record rec = getRecord(db, line);
+            Record rec = getRecord(db, line, true);
             
             if(!rec.isBlank()) {
                 records++;
@@ -109,6 +109,67 @@ public:
         int lineNum = rec.getRecordNumber();
         db.seekp(lineNum*recordSize, ios::beg);
         
+        db << rec.dbRecord();
+        
+        db.close();
+    }
+    
+    void deleteRecord(Record rec) {
+        if(!isOpen) {
+            throw invalid_argument("Database not open");
+        }
+        
+        fstream db(dbFileName);
+        
+        int lineNum = rec.getRecordNumber();
+        db.seekp(lineNum*recordSize, ios::beg);
+        
+        db << emptyRecord();
+        
+        db.close();
+    }
+    
+    void addRecord(Record rec) {
+        cout << "got here" << endl;
+        if(!isOpen) {
+            throw invalid_argument("Database not open");
+        }
+        
+        fstream db(dbFileName);
+        Record insertionPoint = Record();
+        bool found = binarySearch(db, rec.getInstitutionName(), insertionPoint);
+        
+        cout << "got a record" << endl;
+        
+        if(found) {
+            throw invalid_argument("Record already exists");
+        }
+        
+        int lineNum = insertionPoint.getRecordNumber();
+        if(!insertionPoint.isBlank()) {
+            int res = rec.getInstitutionName().compare(insertionPoint.getInstitutionName());
+            
+            if(res == 0) {
+                // record exists?
+            }
+            else if(res  < 0) {
+                lineNum--;
+            }
+            else {
+                lineNum++;
+            }
+            
+            insertionPoint = getRecord(db, lineNum, false);
+            
+            // not guaranteed to be a blank line. if the new point is occupied, we need to rewrite the whole file (overflow)
+            if(!insertionPoint.isBlank()) {
+                // we're fuuuuuucked
+                return;
+            }
+        }
+        
+        // int lineNum = insertionPoint.getRecordNumber();
+        db.seekp(lineNum*recordSize, ios::beg);
         db << rec.dbRecord();
         
         db.close();
@@ -150,7 +211,7 @@ private:
         }
     }
     
-    bool binarySearch(ifstream &db, string pk, Record &rec) {
+    bool binarySearch(fstream &db, string pk, Record &rec) {
         int low = 0;
         int high = numRecords-1;
         int mid;
@@ -158,7 +219,7 @@ private:
         // recursive?
         while(high >= low) {
             mid = (low+high)/2;
-            rec = getRecord(db, mid);
+            rec = getRecord(db, mid, true);
             
             int res = rec.getInstitutionName().compare(pk);
             if(rec.getInstitutionName().compare(pk) == 0) {
@@ -175,7 +236,7 @@ private:
         return false;
     }
     
-    Record getRecord(ifstream &db, int &lineNum) {
+    Record getRecord(fstream &db, int &lineNum, bool ignoreBlanks) {
         if(lineNum < 0 || lineNum > numRecords) {
             throw invalid_argument("Requested index out of range");
         }
@@ -193,12 +254,20 @@ private:
         
         // if we hit a blank line on search, check the next record, since we don't know what to do
         // this is a performance hit.
-        if(univName.length() == 0) {
+        if(ignoreBlanks && univName.length() == 0) {
             lineNum++;
-            return getRecord(db, lineNum);
+            return getRecord(db, lineNum, ignoreBlanks);
         }
         
         return Record(lineNum, univName, satVerb25, satVerb75, satMath25, satMath75, satSub, numEnrl);
+    }
+    
+    string emptyRecord() {
+        string empty = " ";
+        empty.insert(empty.end(), (recordSize-1)-empty.size(), ' ');
+        empty.push_back('\n');
+        
+        return empty;
     }
     
 };
