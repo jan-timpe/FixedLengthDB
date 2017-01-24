@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		CFC109B51E353C7300D59F6B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CFC109B41E353C7300D59F6B /* main.cpp */; };
+		CFC109BF1E3542A400D59F6B /* Database.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CFC109BD1E3542A400D59F6B /* Database.cpp */; };
+		CFC109C41E3542BC00D59F6B /* Record.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CFC109C21E3542BC00D59F6B /* Record.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +27,11 @@
 /* Begin PBXFileReference section */
 		CFC109B11E353C7300D59F6B /* FixedLengthDB */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = FixedLengthDB; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFC109B41E353C7300D59F6B /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		CFC109BB1E353E6100D59F6B /* Universities.config */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Universities.config; sourceTree = "<group>"; };
+		CFC109BC1E353E7300D59F6B /* Universities.db */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Universities.db; sourceTree = "<group>"; };
+		CFC109BD1E3542A400D59F6B /* Database.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Database.cpp; sourceTree = "<group>"; };
+		CFC109C21E3542BC00D59F6B /* Record.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Record.cpp; sourceTree = "<group>"; };
+		CFC109C61E35507300D59F6B /* ResetUniversities.db */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ResetUniversities.db; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,9 +64,30 @@
 		CFC109B31E353C7300D59F6B /* FixedLengthDB */ = {
 			isa = PBXGroup;
 			children = (
+				CFC109C01E3542A900D59F6B /* Database */,
+				CFC109C11E3542B100D59F6B /* Record */,
 				CFC109B41E353C7300D59F6B /* main.cpp */,
 			);
 			path = FixedLengthDB;
+			sourceTree = "<group>";
+		};
+		CFC109C01E3542A900D59F6B /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				CFC109BB1E353E6100D59F6B /* Universities.config */,
+				CFC109BC1E353E7300D59F6B /* Universities.db */,
+				CFC109C61E35507300D59F6B /* ResetUniversities.db */,
+				CFC109BD1E3542A400D59F6B /* Database.cpp */,
+			);
+			name = Database;
+			sourceTree = "<group>";
+		};
+		CFC109C11E3542B100D59F6B /* Record */ = {
+			isa = PBXGroup;
+			children = (
+				CFC109C21E3542BC00D59F6B /* Record.cpp */,
+			);
+			name = Record;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -120,6 +148,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CFC109BF1E3542A400D59F6B /* Database.cpp in Sources */,
+				CFC109C41E3542BC00D59F6B /* Record.cpp in Sources */,
 				CFC109B51E353C7300D59F6B /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
