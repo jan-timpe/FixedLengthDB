@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <vector>
+#include <sstream>
 #include "Record.cpp"
 
 using namespace std;
@@ -103,8 +104,6 @@ public:
             throw invalid_argument("Database not open");
         }
         
-        cout << "Editing line " << rec.getRecordNumber() << endl;
-        
         fstream db(dbFileName);
         
         int lineNum = rec.getRecordNumber();
@@ -156,16 +155,12 @@ private:
         int high = numRecords-1;
         int mid;
         
+        // recursive?
         while(high >= low) {
             mid = (low+high)/2;
             rec = getRecord(db, mid);
             
-            // debug
-//            cout << rec.getRecordNumber() << " * ";
-//            rec.display();
-            
             int res = rec.getInstitutionName().compare(pk);
-            
             if(rec.getInstitutionName().compare(pk) == 0) {
                 return true;
             }
@@ -180,7 +175,7 @@ private:
         return false;
     }
     
-    Record getRecord(ifstream &db, const int lineNum) const {
+    Record getRecord(ifstream &db, int &lineNum) {
         if(lineNum < 0 || lineNum > numRecords) {
             throw invalid_argument("Requested index out of range");
         }
@@ -189,7 +184,19 @@ private:
         int satVerb25, satVerb75, satMath25, satMath75, satSub, numEnrl;
         
         db.seekg(lineNum*recordSize, ios::beg);
-        db >> univName >> satVerb25 >> satVerb75 >> satMath25 >> satMath75 >> satSub >> numEnrl;
+        
+        string line;
+        getline(db, line);
+
+        stringstream linestream = stringstream(line);
+        linestream >> univName >> satVerb25 >> satVerb75 >> satMath25 >> satMath75 >> satSub >> numEnrl;
+        
+        // if we hit a blank line on search, check the next record, since we don't know what to do
+        // this is a performance hit.
+        if(univName.length() == 0) {
+            lineNum++;
+            return getRecord(db, lineNum);
+        }
         
         return Record(lineNum, univName, satVerb25, satVerb75, satMath25, satMath75, satSub, numEnrl);
     }
