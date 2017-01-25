@@ -30,6 +30,7 @@ int getUserMenuSelection() {
     cin >> option;
     
     while(option < 1 || option > 7) {
+        // cin.ignore();
         cout << "Enter a valid option number: ";
         cin >> option;
     }

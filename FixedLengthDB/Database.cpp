@@ -236,7 +236,7 @@ private:
         return false;
     }
     
-    Record getRecord(fstream &db, int &lineNum, bool ignoreBlanks) {
+    Record getRecord(fstream &db, const int lineNum, bool ignoreBlanks) {
         if(lineNum < 0 || lineNum > numRecords) {
             throw invalid_argument("Requested index out of range");
         }
@@ -254,9 +254,9 @@ private:
         
         // if we hit a blank line on search, check the next record, since we don't know what to do
         // this is a performance hit.
+        // ERROR: this makes it impossible to hit a "not found"
         if(ignoreBlanks && univName.length() == 0) {
-            lineNum++;
-            return getRecord(db, lineNum, ignoreBlanks);
+            return getRecord(db, lineNum+1, ignoreBlanks);
         }
         
         return Record(lineNum, univName, satVerb25, satVerb75, satMath25, satMath75, satSub, numEnrl);
