@@ -15,23 +15,23 @@ class Record {
 public:
     Record() {}
     
-    Record(string univName) {
-        institutionName = univName;
-        replace(univName.begin(), univName.end(), '_', ' ');
-        primaryKey = univName;
+    Record(string institution) {
+        setInstitutionName(institution);
+        setPrimaryKey(institution);
     }
     
     Record(int recordNum, string institution, int satVerb25, int satVerb75, int satMath25, int satMath75, int satSub, int numEnrl) {
         recordNumber = recordNum;
-        primaryKey = institution;
-        replace(institution.begin(), institution.end(), '_', ' ');
-        institutionName = institution;
-        satVerbal25th = satVerb25;
-        satVerbal75th = satVerb75;
-        satMath25th = satMath25;
-        satMath75th = satMath75;
-        numSATSubmitted = satSub;
-        numEnrolled = numEnrl;
+        
+        setInstitutionName(institution);
+        setPrimaryKey(institution);
+        
+        setSATVerbal25th(satVerb25);
+        setSATVerbal75th(satVerb75);
+        setSATMath25th(satMath25);
+        setSATMath75th(satMath75);
+        setNumSATSubmitted(satSub);
+        setNumEnrolled(numEnrl);
     }
     
     void display() {
@@ -53,58 +53,99 @@ public:
     }
     
     void setSATVerbal25th(int scr) {
-        satVerbal25th = scr;
+        if(integerArgumentValid(scr)) {
+            satVerbal25th = scr;
+        }
     }
     
     void setSATVerbal75th(int scr) {
-        satVerbal75th = scr;
+        if(integerArgumentValid(scr)) {
+            satVerbal75th = scr;
+        }
     }
     
     void setSATMath25th(int scr) {
-        satMath25th = scr;
+        if(integerArgumentValid(scr)) {
+            satMath25th = scr;
+        }
     }
     
     void setSATMath75th(int scr) {
-        satMath75th = scr;
+        if(integerArgumentValid(scr)) {
+            satMath75th = scr;
+        }
     }
     
     void setNumSATSubmitted(int num) {
-        numSATSubmitted = num;
+        if(integerArgumentValid(num)) {
+            numSATSubmitted = num;
+        }
     }
     
     void setNumEnrolled(int num) {
-        numEnrolled = num;
+        if(integerArgumentValid(num)) {
+            numEnrolled = num;
+        }
     }
     
     string dbRecord() {
+        int stringSize = MAX_STR_LEN+1;
+        int numSize = MAX_INT_LEN+1;
+        
         string pk = primaryKey;
-        pk.insert(pk.end(), 70-pk.size(), ' ');
+        pk.insert(pk.end(), stringSize-pk.size(), ' ');
         
         string satVerb25 = to_string(satVerbal25th);
-        satVerb25.insert(satVerb25.end(), 6-satVerb25.size(), ' ');
+        satVerb25.insert(satVerb25.end(), numSize-satVerb25.size(), ' ');
         
         string satVerb75 = to_string(satVerbal75th);
-        satVerb75.insert(satVerb75.end(), 6-satVerb75.size(), ' ');
+        satVerb75.insert(satVerb75.end(), numSize-satVerb75.size(), ' ');
         
         string satMath25 = to_string(satMath25th);
-        satMath25.insert(satMath25.end(), 6-satMath25.size(), ' ');
+        satMath25.insert(satMath25.end(), numSize-satMath25.size(), ' ');
         
         string satMath75 = to_string(satMath75th);
-        satMath75.insert(satMath75.end(), 6-satMath75.size(), ' ');
+        satMath75.insert(satMath75.end(), numSize-satMath75.size(), ' ');
         
         string satSub = to_string(numSATSubmitted);
-        satSub.insert(satSub.end(), 6-satSub.size(), ' ');
+        satSub.insert(satSub.end(), numSize-satSub.size(), ' ');
         
         string numEnrl = to_string(numEnrolled);
-        numEnrl.insert(numEnrl.end(), 6-numEnrl.size(), ' ');
+        numEnrl.insert(numEnrl.end(), numSize-numEnrl.size(), ' ');
         
         return pk+satVerb25+satVerb75+satMath25+satMath75+satSub+numEnrl+'\n';
     }
     
 private:
+    static const int MAX_INT_LEN = 6;
+    static const int MAX_INT_VAL = 999999;
+    static const int MAX_STR_LEN = 70;
+    
     int recordNumber;
     string institutionName, primaryKey;
     int satVerbal25th, satVerbal75th;
     int satMath25th, satMath75th;
     int numSATSubmitted, numEnrolled;
+    
+    void setInstitutionName(string institution) {
+        if(stringArgumentValid(institution)) {
+            replace(institution.begin(), institution.end(), '_', ' ');
+            institutionName = institution;
+        }
+    }
+    
+    void setPrimaryKey(string institution) {
+        if(stringArgumentValid(institution)) {
+            replace(institution.begin(), institution.end(), ' ', '_');
+            primaryKey = institution;
+        }
+    }
+    
+    bool integerArgumentValid(int num) {
+        return (num <= MAX_INT_VAL && num >= 0);
+    }
+    
+    bool stringArgumentValid(string str) {
+        return str.length() <= MAX_STR_LEN;
+    }
 };

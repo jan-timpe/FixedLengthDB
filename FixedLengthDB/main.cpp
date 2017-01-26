@@ -26,11 +26,11 @@ void displayMenu() {
 
 int getUserMenuSelection() {
     int option = 0;
+    cin.clear();
     cout << "Enter an option number: ";
     cin >> option;
     
     while(option < 1 || option > 7) {
-        // cin.ignore();
         cout << "Enter a valid option number: ";
         cin >> option;
     }
@@ -106,7 +106,6 @@ void updateRecord(Database &db) {
         int numEnrl = 0;
         cout << "Enter a new Number of Students Enrolled value: ";
         cin >> numEnrl;
-        cout << "We got this far..." << endl;
         rec.setNumEnrolled(numEnrl);
         
         db.updateRecord(rec);
@@ -131,39 +130,39 @@ void addRecord(Database &db) {
     cout << "Enter the university name to add: ";
     getline(cin, universityName);
     
+    Record rec = Record(universityName);
+    
+    int verb25 = 0;
+    cout << "Enter an SAT Verbal 25th Percentile value: ";
+    cin >> verb25;
+    rec.setSATVerbal25th(verb25);
+    
+    int verb75 = 0;
+    cout << "Enter an SAT Verbal 75th Percentile value: ";
+    cin >> verb75;
+    rec.setSATVerbal75th(verb75);
+    
+    int math25 = 0;
+    cout << "Enter an SAT Math 25th Percentile value: ";
+    cin >> math25;
+    rec.setSATMath25th(math25);
+    
+    int math75 = 0;
+    cout << "Enter an SAT Math 75th Percentile value: ";
+    cin >> math75;
+    rec.setSATMath75th(math75);
+    
+    int numSAT = 0;
+    cout << "Enter a Number of SATs Submitted value: ";
+    cin >> numSAT;
+    rec.setNumSATSubmitted(numSAT);
+    
+    int numEnrl = 0;
+    cout << "Enter a Number of Students Enrolled value: ";
+    cin >> numEnrl;
+    rec.setNumEnrolled(numEnrl);
+    
     try {
-        Record rec = Record(universityName);
-        
-        int verb25 = 0;
-        cout << "Enter an SAT Verbal 25th Percentile value: ";
-        cin >> verb25;
-        rec.setSATVerbal25th(verb25);
-        
-        int verb75 = 0;
-        cout << "Enter an SAT Verbal 75th Percentile value: ";
-        cin >> verb75;
-        rec.setSATVerbal75th(verb75);
-        
-        int math25 = 0;
-        cout << "Enter an SAT Math 25th Percentile value: ";
-        cin >> math25;
-        rec.setSATMath25th(math25);
-        
-        int math75 = 0;
-        cout << "Enter an SAT Math 75th Percentile value: ";
-        cin >> math75;
-        rec.setSATMath75th(math75);
-        
-        int numSAT = 0;
-        cout << "Enter a Number of SATs Submitted value: ";
-        cin >> numSAT;
-        rec.setNumSATSubmitted(numSAT);
-        
-        int numEnrl = 0;
-        cout << "Enter a Number of Students Enrolled value: ";
-        cin >> numEnrl;
-        rec.setNumEnrolled(numEnrl);
-        
         db.addRecord(rec);
     }
     catch(exception &e) {
@@ -186,13 +185,14 @@ void deleteRecord(Database &db) {
     }
 }
 
-void quit() {
+void closeAndQuit(Database &db) {
     char q;
     cin.ignore();
     cout << "Are you sure you want to quit [y/n]? ";
     cin >> q;
     
     if(q == 'y' || q == 'Y') {
+        db.closeDatabase();
         exit(9);
     }
 }
@@ -224,7 +224,7 @@ void performMenuAction(int menuOption, Database &db) {
             break;
             
         case 7:
-            quit();
+            closeAndQuit(db);
             
         default:
             break;
