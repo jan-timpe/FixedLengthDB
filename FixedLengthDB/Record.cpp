@@ -149,3 +149,35 @@ private:
         return str.length() <= MAX_STR_LEN;
     }
 };
+
+inline bool operator==(Record &left, Record &right) {
+    return (left.getInstitutionName().compare(right.getInstitutionName()) == 0);
+}
+inline bool operator<(Record &left, Record &right) {
+    return (left.getInstitutionName().compare(right.getInstitutionName()) < 0);
+}
+inline bool operator>(Record &left, Record &right) {
+    return !(left < right);
+}
+
+//
+inline bool operator==(Record &left, string &right) {
+    return (left.getInstitutionName().compare(right) == 0);
+}
+inline bool operator<(Record &left, string &right) {
+    return (left.getInstitutionName().compare(right) < 0);
+}
+inline bool operator>(Record &left, string &right) {
+    return !(left < right);
+}
+
+//
+inline bool operator==(string &left, Record &right) {
+    return (right == left);
+}
+inline bool operator<(string &left, Record &right) {
+    return (right < left);
+}
+inline bool operator>(string &left, Record &right) {
+    return !(left < right);
+}

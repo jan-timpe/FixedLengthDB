@@ -15,213 +15,59 @@
 using namespace std;
 
 class Database {
-public:
-    static bool fileExists(string fileName) {
-        ifstream file(fileName.c_str());
-        return file.good();
-    }
     
-    bool databaseIsOpen() {
-        return isOpen;
-    }
-    
-    Database() {
-        dbName = "";
-        dbFileName = "";
-        configFileName = "";
-        isOpen = false;
-    }
-    
-    Database(string name) {
-        string fileName = name+".db";
-        string configName = name+".config";
-        
-        if(fileExists(fileName) && fileExists(configName)) {
-            dbName = name;
-            dbFileName = fileName;
-            configFileName = name+".config";
-            readConfig();
-            isOpen = true;
-        }
-        else {
-            throw invalid_argument(fileName+" does not exist");
-        }
-    }
-    
-    string getDatabaseName() {
-        return dbName;
-    }
-    
-    void printFields() {
-        for(string field: fields) {
-            cout << field << "\t";
-        }
-        cout << endl;
-    }
-    
-    Record findRecord(string universityName) {
-        validateFileOperations();
-        
-        fstream db(dbFileName);
-        
-        Record rec = Record();
-        bool found = binarySearch(db, universityName, rec);
-        db.close();
-        
-        if(!found) {
-            throw invalid_argument(universityName+" not found");
-        }
-        
-        return rec;
-    }
-    
-    void printReport() {
-        validateFileOperations();
-        
-        printFields();
-        cout << endl;
-        
-        fstream db(dbFileName);
-        
-        int records = 0;
-        
-        for(int line = 0; (line < numRecords && records < 10); line++) {
-            Record rec = getRecord(db, line, true);
-            
-            if(!rec.isBlank()) {
-                records++;
-                cout << records << ". ";
-                rec.display();
-            }
-        }
-        
-        db.close();
-        
-        cout << endl;
-    }
-    
-    void updateRecord(Record rec) {
-        validateFileOperations();
-        
-        fstream db(dbFileName);
-        
-        int lineNum = rec.getRecordNumber();
-        db.seekp(lineNum*recordSize, ios::beg);
-        
-        db << rec.dbRecord();
-        
-        db.close();
-    }
-    
-    void deleteRecord(Record rec) {
-        validateFileOperations();
-        
-        fstream db(dbFileName);
-        
-        int lineNum = rec.getRecordNumber();
-        db.seekp(lineNum*recordSize, ios::beg);
-        
-        db << emptyRecord();
-        db.close();
-    }
-    
-    void addRecord(Record rec) {
-        validateFileOperations();
-        
-        fstream db(dbFileName);
-        
-        Record insertionPoint = Record();
-        bool found = binarySearch(db, rec.getInstitutionName(), insertionPoint);
-        
-        if(found) {
-            throw invalid_argument("Record already exists");
-        }
-        
-        int lineNum = insertionPoint.getRecordNumber();
-        if(!insertionPoint.isBlank()) {
-            int res = rec.getInstitutionName().compare(insertionPoint.getInstitutionName());
-            
-            if(res == 0) {
-                // record exists?
-                throw invalid_argument("Record already exists");
-            }
-            else if(res  < 0) {
-                lineNum--;
-            }
-            else {
-                lineNum++;
-            }
-            
-            insertionPoint = getRecord(db, lineNum, false);
-            
-            // not guaranteed to be a blank line. if the new point is occupied, we need to rewrite the whole file (overflow)
-            if(!insertionPoint.isBlank()) {
-                rewriteWithInsert(db, rec, insertionPoint.getRecordNumber());
-            }
-        }
-        
-        db.seekp(lineNum*recordSize, ios::beg);
-        db << rec.dbRecord();
-        db.close();
-    }
-    
-    void justDoARewrite() {
-        fstream db(dbFileName);
-        rewriteFile(db);
-        db.close();
-    }
-    
-    void closeDatabase() {
-        writeConfig();
-        isOpen = false;
-    }
-    
+#pragma mark - Private Properties
 private:
     string dbName, dbFileName, configFileName;
     int numRecords, recordSize;
     vector<string> fields;
     bool isOpen;
     
+    // thrown when the database is not open
+    // useful for instantiated Database() objects without valid file names
     struct DatabaseNotOpenException: public exception {
         const char * what() const throw() {
             return "Database not open";
         }
     };
     
-    void validateFileOperations() {
-        if(!databaseIsOpen()) {
-            throw DatabaseNotOpenException();
-        }
-    }
-    
-    void writeConfig() {
-        ofstream config(configFileName);
-        config << numRecords << endl;
-        config << recordSize << endl;
-        for(string field: fields) {
-            config << field << endl;
-        }
-        config.close();
-    }
-    
-    void readConfig() {
-        ifstream config(configFileName);
-        isOpen = false;
+    // search through an open database file
+    bool binarySearch(fstream &db, string pk, Record &rec) {
+        int low = 0;
+        int high = numRecords-1;
+        int mid;
         
-        if(config.is_open()) {
-            int lineNumber = 1;
-            string line;
+        // recursive?
+        while(high >= low) {
+            mid = (low+high)/2;
+            rec = getRecord(db, mid, true);
             
-            while(getline(config, line)) {
-                getConfigParam(lineNumber, line);
-                lineNumber++;
+            if(rec == pk) {
+                return true;
             }
-            isOpen = true;
+            else if(rec < pk) {
+                low = mid+1;
+            }
+            else {
+                high = mid-1;
+            }
         }
         
-        config.close();
+        return false;
     }
     
+    // returns an empty record (all spaces) representing a blank line in the database
+    // includes endline character
+    string emptyRecord() {
+        string empty = " ";
+        empty.insert(empty.end(), (recordSize-1)-empty.size(), ' ');
+        empty.push_back('\n');
+        
+        return empty;
+    }
+    
+    // helper function
+    // assigns a variable to the contents of a config param based on line number
     void getConfigParam(int lineNumber, string lineText) {
         if(lineNumber == 1) {
             numRecords = atoi(lineText.c_str());
@@ -234,65 +80,30 @@ private:
         }
     }
     
-    bool binarySearch(fstream &db, string pk, Record &rec) {
-        int low = 0;
-        int high = numRecords-1;
-        int mid;
-        
-        // recursive?
-        while(high >= low) {
-            mid = (low+high)/2;
-            rec = getRecord(db, mid, true);
-            
-            int res = rec.getInstitutionName().compare(pk);
-            if(rec.getInstitutionName().compare(pk) == 0) {
-                return true;
-            }
-            else if(res < 0) {
-                low = mid+1;
-            }
-            else {
-                high = mid-1;
-            }
-        }
-        
-        return false;
-    }
-    
+    // returns the structured record at lineNum
+    // if ignoreBlanks is set to true, no empty records will be returned (the next non-empty record is used) - lineNum is not updated in this case (performance hit, line could be re-searched)
+    // fixme: find a way to update lineNum to make this more efficient
+    // throws out_of_range if lineNum is not within the number of lines in the file
     Record getRecord(fstream &db, const int lineNum, bool ignoreBlanks) {
-        cout << "Fetching record" << endl;
         if(lineNum < 0 || lineNum > numRecords) {
             throw out_of_range("Requested index out of range");
         }
-        
-        string univName;
-        int satVerb25, satVerb75, satMath25, satMath75, satSub, numEnrl;
         
         db.seekg(lineNum*recordSize, ios::beg);
         
         string line;
         getline(db, line);
-
-        stringstream linestream = stringstream(line);
-        linestream >> univName >> satVerb25 >> satVerb75 >> satMath25 >> satMath75 >> satSub >> numEnrl;
         
         // if we hit a blank line on search, check the next record, since we don't know what to do
         // this is a performance hit (on two sides since we can't update lineNum)
-        if(ignoreBlanks && univName.length() == 0) {
+        if(ignoreBlanks && lineIsEmpty(line)) {
             return getRecord(db, lineNum+1, ignoreBlanks);
         }
         
-        return Record(lineNum, univName, satVerb25, satVerb75, satMath25, satMath75, satSub, numEnrl);
+        return recordFromFileLine(line, lineNum);
     }
     
-    string emptyRecord() {
-        string empty = " ";
-        empty.insert(empty.end(), (recordSize-1)-empty.size(), ' ');
-        empty.push_back('\n');
-        
-        return empty;
-    }
-    
+    // returns true if a line from the database file is empty (university-name/pk not set)
     bool lineIsEmpty(string line) {
         string univName;
         int satVerb25, satVerb75, satMath25, satMath75, satSub, numEnrl;
@@ -303,6 +114,51 @@ private:
         return (univName.length() == 0);
     }
     
+    // export new database settings/info
+    void writeConfig() {
+        ofstream config(configFileName);
+        
+        config << numRecords << endl;
+        config << recordSize << endl;
+        
+        for(string field: fields) {
+            config << field << endl;
+        }
+        config.close();
+    }
+    
+    // import database settings/info
+    void readConfig() {
+        ifstream config(configFileName);
+        isOpen = false;
+        
+        if(config.is_open()) {
+            int lineNumber = 1;
+            string line;
+            fields.clear();
+            
+            while(getline(config, line)) {
+                getConfigParam(lineNumber, line);
+                lineNumber++;
+            }
+            isOpen = true;
+        }
+        
+        config.close();
+    }
+    
+    // returns a structured record given by a line in the database file
+    Record recordFromFileLine(string line, int lineNum) {
+        string univName;
+        int satVerb25, satVerb75, satMath25, satMath75, satSub, numEnrl;
+        
+        stringstream linestream = stringstream(line);
+        linestream >> univName >> satVerb25 >> satVerb75 >> satMath25 >> satMath75 >> satSub >> numEnrl;
+        
+        return Record(lineNum, univName, satVerb25, satVerb75, satMath25, satMath75, satSub, numEnrl);
+    }
+    
+    // rebuilds the database file by inserting blank lines between each populated (non-empty) record
     void rewriteFile(fstream &db) {
         ofstream newFile("tmp.db");
         
@@ -326,6 +182,7 @@ private:
         rename("tmp.db", dbFileName.c_str());
     }
     
+    // rebuilds the database file while inserting a new record at insertLine
     void rewriteWithInsert(fstream &db, Record ins, int insertLine) {
         ofstream newfile("tmp.db");
         
@@ -353,7 +210,190 @@ private:
         newfile.close();
         remove(dbFileName.c_str());
         rename("tmp.db", dbFileName.c_str());
-        numRecords = writeLine+1;
+        numRecords = writeLine;
+    }
+    
+    // make sure the database can be opened
+    void validateFileOperations() {
+        if(!databaseIsOpen()) {
+            throw DatabaseNotOpenException();
+        }
+    }
+    
+    
+    
+
+#pragma mark - Public Properties
+public:
+    
+    // public constuctor (overrides default)
+    Database() {
+        dbName = "";
+        dbFileName = "";
+        configFileName = "";
+        isOpen = false;
+    }
+    
+    // public constructor
+    // validates database name and reads configuration parameters
+    Database(string name) {
+        string fileName = name+".db";
+        string configName = name+".config";
+        
+        if(fileExists(fileName) && fileExists(configName)) {
+            setDatabaseFileNames(name);
+            isOpen = false; // database is not open until we read the config file
+            readConfig();
+        }
+        else {
+            throw invalid_argument(fileName+" does not exist");
+        }
+    }
+    
+    // adds a new record in the database
+    // adds into the blank line between records
+    // if no blank line available, triggers a file rewrite
+    void addRecord(Record rec) {
+        validateFileOperations();
+        
+        fstream db(dbFileName);
+        
+        Record insertionPoint = Record();
+        bool found = binarySearch(db, rec.getInstitutionName(), insertionPoint);
+        
+        if(found) {
+            throw invalid_argument("Record already exists");
+        }
+        
+        int lineNum = insertionPoint.getRecordNumber();
+        if(!insertionPoint.isBlank()) {
+            
+            // there _shouldn't_ be an == case...
+            if(rec < insertionPoint) {
+                lineNum--;
+            }
+            else {
+                lineNum++;
+            }
+            
+            insertionPoint = getRecord(db, lineNum, false);
+            
+            // not guaranteed to be a blank line. if the new point is occupied, we need to rewrite the whole file (overflow)
+            if(!insertionPoint.isBlank()) {
+                rewriteWithInsert(db, rec, insertionPoint.getRecordNumber());
+            }
+        }
+        
+        db.seekp(lineNum*recordSize, ios::beg);
+        db << rec.dbRecord();
+        db.close();
+    }
+    
+    // closes the database
+    // rewrites the config file and blocks access for future calls
+    void closeDatabase() {
+        writeConfig();
+        isOpen = false;
+    }
+    
+    // deletes the record (previously found via search) in the database
+    void deleteRecord(Record rec) {
+        validateFileOperations();
+        
+        int lineNum = rec.getRecordNumber();
+        
+        fstream db(dbFileName);
+        db.seekp(lineNum*recordSize, ios::beg);
+        db << emptyRecord();
+        db.close();
+    }
+    
+    // returns true if the database is/can-be opened
+    bool databaseIsOpen() {
+        return isOpen;
+    }
+    
+    // returns true if the specified file already exists
+    static bool fileExists(string fileName) {
+        ifstream file(fileName.c_str());
+        return file.good();
+    }
+    
+    // returns the record matching universityName in the database
+    // throws an invalid argument if the record is not found
+    Record findRecord(string universityName) {
+        validateFileOperations();
+        
+        fstream db(dbFileName);
+        Record rec = Record();
+        bool found = binarySearch(db, universityName, rec);
+        db.close();
+        
+        if(!found) {
+            throw invalid_argument(universityName+" not found");
+        }
+        
+        return rec;
+    }
+    
+    // returns the database name
+    string getDatabaseName() {
+        return dbName;
+    }
+    
+    // prints fields (from config file) to the screen
+    void printFields() {
+        for(string field: fields) {
+            cout << field << "\t";
+        }
+        cout << endl;
+    }
+    
+    
+    // fixme: not sure this even works
+    void printReport() {
+        validateFileOperations();
+        
+        printFields();
+        cout << endl;
+        
+        fstream db(dbFileName);
+        
+        int records = 0;
+        
+        for(int line = 0; (line < numRecords && records < 10); line++) {
+            Record rec = getRecord(db, line, true);
+            
+            if(!rec.isBlank()) {
+                records++;
+                cout << records << ". ";
+                rec.display();
+            }
+        }
+        
+        db.close();
+        
+        cout << endl;
+    }
+    
+    // sets the database file names (have already been validated)
+    // called from constructor
+    void setDatabaseFileNames(string name) {
+        dbName = name;
+        dbFileName = name+".db";
+        configFileName = name+".config";
+    }
+    
+    // updates the record (previously found via search) in the database
+    void updateRecord(Record rec) {
+        validateFileOperations();
+        
+        int lineNum = rec.getRecordNumber();
+        
+        fstream db(dbFileName);
+        db.seekp(lineNum*recordSize, ios::beg);
+        db << rec.dbRecord();
+        db.close();
     }
     
 };
