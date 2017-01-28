@@ -117,7 +117,7 @@ void updateRecord(Database &db) {
 
 void createReport(Database &db) {
     try {
-        db.printReport();
+        db.buildReport();
     }
     catch(exception &e) {
         cout << "ERROR: " << e.what() << endl;
@@ -230,7 +230,6 @@ void performMenuAction(int menuOption, Database &db) {
             break;
     }
 }
-
 
 void nextAction(Database &db) {
     displayMenu();

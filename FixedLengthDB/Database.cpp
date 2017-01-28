@@ -114,17 +114,30 @@ private:
         return (univName.length() == 0);
     }
     
-    // export new database settings/info
-    void writeConfig() {
-        ofstream config(configFileName);
-        
-        config << numRecords << endl;
-        config << recordSize << endl;
-        
+    // outputs the field names to a file
+    void outputFields(ofstream &file, int colSize) {
+        char fieldNum = 'a';
         for(string field: fields) {
-            config << field << endl;
+            file << fieldNum << ". " << field << endl;
+            fieldNum++;
         }
-        config.close();
+        file << endl;
+    }
+    
+    // outputs a number of records to a file (no blanks)
+    void outputRecords(ofstream &file, int numRecords) {
+        fstream db(dbFileName);
+        for(int line = 0, records = 0; records < numRecords; line++) {
+            // getRecord.ignoreBlanks is set to false because lineNum is not updated within the function
+            // this avoids double printing lines with blanks before them
+            // fixme: clearly not behavior we like
+            Record rec  = getRecord(db, line, false);
+            if(!rec.isBlank()) {
+                file << records+1 << ". " << rec.fileDisplay();
+                records++;
+            }
+        }
+        db.close();
     }
     
     // import database settings/info
@@ -220,7 +233,18 @@ private:
         }
     }
     
-    
+    // export new database settings/info
+    void writeConfig() {
+        ofstream config(configFileName);
+        
+        config << numRecords << endl;
+        config << recordSize << endl;
+        
+        for(string field: fields) {
+            config << field << endl;
+        }
+        config.close();
+    }
     
 
 #pragma mark - Public Properties
@@ -289,6 +313,16 @@ public:
         db.close();
     }
     
+    // outputs a file Report.txt with the first 10 non-empty records in the database
+    void buildReport() {
+        ofstream report("Report.txt");
+        outputFields(report, 40);
+        outputRecords(report, 10);
+        report.close();
+        
+        cout << "File 'Report.txt' created successfully." << endl;
+    }
+    
     // closes the database
     // rewrites the config file and blocks access for future calls
     void closeDatabase() {
@@ -346,33 +380,6 @@ public:
         for(string field: fields) {
             cout << field << "\t";
         }
-        cout << endl;
-    }
-    
-    
-    // fixme: not sure this even works
-    void printReport() {
-        validateFileOperations();
-        
-        printFields();
-        cout << endl;
-        
-        fstream db(dbFileName);
-        
-        int records = 0;
-        
-        for(int line = 0; (line < numRecords && records < 10); line++) {
-            Record rec = getRecord(db, line, true);
-            
-            if(!rec.isBlank()) {
-                records++;
-                cout << records << ". ";
-                rec.display();
-            }
-        }
-        
-        db.close();
-        
         cout << endl;
     }
     
