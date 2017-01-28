@@ -1,6 +1,6 @@
 Adelphi_University                                                     500    600    510    620    715    7610   
                                                                                                                  
-Alabama_State_University                                               2      2      2      2      2      9999   
+Alabama_State_University                                               380    470    380    480    272    5519   
                                                                                                                  
 Alvernia_University                                                    430    520    440    550    364    2917   
                                                                                                                  
@@ -29,8 +29,6 @@ Barry_University                                                       430    51
 Baylor_University                                                      560    660    570    670    1714   16263  
                                                                                                                  
 Bellarmine_University                                                  510    590    500    590    133    3609   
-                                                                                                                 
-Bleh                                                                   34     34     34     34     34     34     
                                                                                                                  
 Boston_College                                                         630    720    640    740    1569   14317  
                                                                                                                  
@@ -103,8 +101,6 @@ Florida_International_University                                       500    59
 Florida_State_University                                               570    640    560    640    2541   41226  
                                                                                                                  
 Fordham_University                                                     570    670    580    680    1825   15231  
-                                                                                                                 
-Fuck_U                                                                 1      1      1      1      1      1      
                                                                                                                  
 Gannon_University                                                      460    560    470    570    483    4410   
                                                                                                                  
@@ -334,10 +330,6 @@ Syracuse_University                                                    520    62
                                                                                                                  
 Temple_University                                                      500    610    510    620    4045   37485  
                                                                                                                  
-Test_A_Long_Univ_Name                                                  45     45     45     45     45     45     
-                                                                                                                 
-Test                                                                   34     34     34     34     34     34     
-                                                                                                                 
 Texas_A_&_M_University-College_Station                                 520    640    560    670    6757   61642  
                                                                                                                  
 Texas_Christian_University                                             530    630    550    650    738    10033  
@@ -388,7 +380,7 @@ University_of_Alabama_at_Birmingham                                    500    64
                                                                                                                  
 University_of_Alabama_in_Huntsville                                    520    670    530    650    111    7348   
                                                                                                                  
-University_of_Arkansas                                                 23     23     56     56     56     56     
+University_of_Arkansas                                                 500    610    510    620    1153   26237  
                                                                                                                  
 University_of_Arkansas_at_Little_Rock                                  410    530    460    560    15     11645  
                                                                                                                  

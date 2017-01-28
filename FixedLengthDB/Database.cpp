@@ -32,6 +32,7 @@ private:
     };
     
     // search through an open database file
+    // todo: make this recursive?
     bool binarySearch(fstream &db, string pk, Record &rec) {
         int low = 0;
         int high = numRecords-1;
@@ -83,6 +84,7 @@ private:
     // returns the structured record at lineNum
     // if ignoreBlanks is set to true, no empty records will be returned (the next non-empty record is used) - lineNum is not updated in this case (performance hit, line could be re-searched)
     // fixme: find a way to update lineNum to make this more efficient
+    // justification: line num doesn't get updated because it sends a binary search into an infinite loop
     // throws out_of_range if lineNum is not within the number of lines in the file
     Record getRecord(fstream &db, const int lineNum, bool ignoreBlanks) {
         if(lineNum < 0 || lineNum > numRecords) {
