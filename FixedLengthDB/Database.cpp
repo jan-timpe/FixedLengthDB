@@ -110,7 +110,7 @@ private:
         string univName;
         int satVerb25, satVerb75, satMath25, satMath75, satSub, numEnrl;
         
-        stringstream linestream = stringstream(line);
+        stringstream linestream(line);
         linestream >> univName >> satVerb25 >> satVerb75 >> satMath25 >> satMath75 >> satSub >> numEnrl;
         
         return (univName.length() == 0);
@@ -167,7 +167,7 @@ private:
         string univName;
         int satVerb25, satVerb75, satMath25, satMath75, satSub, numEnrl;
         
-        stringstream linestream = stringstream(line);
+        stringstream linestream(line);
         linestream >> univName >> satVerb25 >> satVerb75 >> satMath25 >> satMath75 >> satSub >> numEnrl;
         
         return Record(lineNum, univName, satVerb25, satVerb75, satMath25, satMath75, satSub, numEnrl);

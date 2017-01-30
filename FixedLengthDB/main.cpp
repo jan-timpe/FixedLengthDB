@@ -75,6 +75,7 @@ void displayRecord(Database &db) {
 
 // OPTION 3
 // todo: allow updating of only a specific field
+// fixme: addRecord() and updateRecord() both have the same output (and are stupidly long) - abstract?
 void updateRecord(Database &db) {
     string universityName;
     cin.ignore();
