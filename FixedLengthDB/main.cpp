@@ -12,6 +12,7 @@
 
 using namespace std;
 
+//
 void displayMenu() {
     cout << "\n\nMenu\n==================" << endl;
     cout << "1. Open a database" << endl;
@@ -24,6 +25,7 @@ void displayMenu() {
     cout << "==================" << endl;
 }
 
+// requests a menu options (1-7) corresponding to values in displayMenu() (above)
 int getUserMenuSelection() {
     int option = 0;
     cin.clear();
@@ -38,6 +40,7 @@ int getUserMenuSelection() {
     return option;
 }
 
+// OPTION 1
 void openDatabase(Database &db) {
     string dbName;
     cin.ignore();
@@ -53,6 +56,7 @@ void openDatabase(Database &db) {
     }
 }
 
+// OPTION 2
 void displayRecord(Database &db) {
     string universityName;
     cin.ignore();
@@ -69,6 +73,8 @@ void displayRecord(Database &db) {
     }
 }
 
+// OPTION 3
+// todo: allow updating of only a specific field
 void updateRecord(Database &db) {
     string universityName;
     cin.ignore();
@@ -115,6 +121,7 @@ void updateRecord(Database &db) {
     }
 }
 
+// OPTION 4
 void createReport(Database &db) {
     try {
         db.buildReport();
@@ -124,6 +131,7 @@ void createReport(Database &db) {
     }
 }
 
+// OPTION 5
 void addRecord(Database &db) {
     string universityName;
     cin.ignore();
@@ -170,6 +178,7 @@ void addRecord(Database &db) {
     }
 }
 
+// OPTION 6
 void deleteRecord(Database &db) {
     string universityName;
     cin.ignore();
@@ -185,6 +194,7 @@ void deleteRecord(Database &db) {
     }
 }
 
+// OPTION 7
 void closeAndQuit(Database &db) {
     char q;
     cin.ignore();
@@ -197,6 +207,7 @@ void closeAndQuit(Database &db) {
     }
 }
 
+// given a menu option, performs the appropriate function
 void performMenuAction(int menuOption, Database &db) {
     switch(menuOption) {
         case 1:
@@ -231,17 +242,22 @@ void performMenuAction(int menuOption, Database &db) {
     }
 }
 
+// displays menu and performs action based on selected option
 void nextAction(Database &db) {
     displayMenu();
     int menuOption = getUserMenuSelection();
     performMenuAction(menuOption, db);
 }
 
+//
 int main(int argc, const char * argv[]) {
-    cout << "Welcome to the world's worst database." << endl;
+    cout << "Welcome to the world's worst database." << endl; // name is a work in progress
     
+    // instantiate an empty database
+    // (effectively a singleton for this application, although more instances can be created)
     Database db = Database();
     
+    // go on and on and on (until i say stop)
     char terminate = 'n';
     while(terminate != 'y' && terminate != 'Y') {
         nextAction(db);

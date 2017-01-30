@@ -189,6 +189,7 @@ public:
     }
     
     /* Setters - even more self-explanatory */
+    // todo: leverage exceptions to notify the user if their value wasn't accepted
     void setSATVerbal25th(int scr) {
         if(integerArgumentValid(scr)) {
             satVerbal25th = scr;
