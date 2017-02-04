@@ -122,8 +122,34 @@ void updateRecord(Database &db) {
 
 // OPTION 4
 void createReport(Database &db) {
+    int option = 0;
+    cin.ignore();
+    cout << "Options" << endl;
+    cout << "1. Build a report text file" << endl;
+    cout << "2. Output report to console" << endl;
+    cout << "Choose a report option: ";
+    
+    cin >> option;
+    
+    while(option != 1 && option != 2) {
+        cout << "Enter a valid report option: ";
+        cin >> option;
+    }
+    
+    
     try {
-        db.buildReport();
+        switch(option) {
+            case 1:
+                db.buildReport();
+                break;
+                
+            case 2:
+                db.printReport();
+                break;
+                
+            default:
+                break;
+        }
     }
     catch(exception &e) {
         cout << "ERROR: " << e.what() << endl;

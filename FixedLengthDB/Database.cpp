@@ -119,19 +119,19 @@ private:
     }
     
     // outputs the field names to a file
-    void outputFields(ofstream &file, int colSize) {
+    void outputFields(ostream &sm, int colSize) {
         char fieldNum = 'a';
         int i;
         for(i = 0; i < fields.size(); i++) {
             string field = fields[i];
-            file << fieldNum << ". " << field << endl;
+            sm << fieldNum << ". " << field << endl;
             fieldNum++;
         }
-        file << endl;
+        sm << endl;
     }
     
     // outputs a number of records to a file (no blanks)
-    void outputRecords(ofstream &file, int numRecords) {
+    void outputRecords(ostream &sm, int numRecords) {
         fstream db(dbFileName.c_str());
         for(int line = 0, records = 0; records < numRecords; line++) {
             // getRecord.ignoreBlanks is set to false because lineNum is not updated within the function
@@ -139,7 +139,7 @@ private:
             // fixme: clearly not behavior we like
             Record rec  = getRecord(db, line, false);
             if(!rec.isBlank()) {
-                file << records+1 << ". " << rec.fileDisplay();
+                sm << records+1 << ". " << rec.fileDisplay();
                 records++;
             }
         }
@@ -383,13 +383,10 @@ public:
         return dbName;
     }
     
-    // prints fields (from config file) to the screen
-    void printFields() {
-        int i;
-        for(i = 0; i < fields.size(); i++) {
-            string field = fields[i];
-            cout << field << "\t";
-        }
+    // prints a report to the console
+    void printReport() {
+        outputFields(cout, 40);
+        outputRecords(cout, 10);
         cout << endl;
     }
     
