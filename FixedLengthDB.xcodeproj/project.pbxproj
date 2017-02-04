@@ -31,7 +31,6 @@
 		CFC109BC1E353E7300D59F6B /* Universities.db */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Universities.db; sourceTree = "<group>"; };
 		CFC109BD1E3542A400D59F6B /* Database.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Database.cpp; sourceTree = "<group>"; };
 		CFC109C21E3542BC00D59F6B /* Record.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Record.cpp; sourceTree = "<group>"; };
-		CFC109C61E35507300D59F6B /* ResetUniversities.db */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ResetUniversities.db; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,7 +75,6 @@
 			children = (
 				CFC109BB1E353E6100D59F6B /* Universities.config */,
 				CFC109BC1E353E7300D59F6B /* Universities.db */,
-				CFC109C61E35507300D59F6B /* ResetUniversities.db */,
 				CFC109BD1E3542A400D59F6B /* Database.cpp */,
 			);
 			name = Database;
@@ -247,6 +245,8 @@
 		CFC109B91E353C7300D59F6B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++98";
+				CLANG_CXX_LIBRARY = "libc++";
 				DEVELOPMENT_TEAM = 6749TS5BH5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -255,6 +255,8 @@
 		CFC109BA1E353C7300D59F6B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++98";
+				CLANG_CXX_LIBRARY = "libc++";
 				DEVELOPMENT_TEAM = 6749TS5BH5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -279,6 +281,7 @@
 				CFC109BA1E353C7300D59F6B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

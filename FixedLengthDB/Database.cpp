@@ -10,6 +10,8 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
+#include <string>
+#include <stdexcept>
 #include "Record.cpp"
 
 using namespace std;
@@ -26,7 +28,7 @@ private:
     // thrown when the database is not open
     // useful for instantiated Database() objects without valid file names
     struct DatabaseNotOpenException: public exception {
-        const char * what() const throw() {
+        const char *what() const throw() {
             return "Database not open";
         }
     };
@@ -38,11 +40,11 @@ private:
         int high = numRecords-1;
         int mid;
         
-        // recursive?
         while(high >= low) {
             mid = (low+high)/2;
             rec = getRecord(db, mid, true);
             
+            // leverage overloaded operators 
             if(rec == pk) {
                 return true;
             }
@@ -119,7 +121,9 @@ private:
     // outputs the field names to a file
     void outputFields(ofstream &file, int colSize) {
         char fieldNum = 'a';
-        for(string field: fields) {
+        int i;
+        for(i = 0; i < fields.size(); i++) {
+            string field = fields[i];
             file << fieldNum << ". " << field << endl;
             fieldNum++;
         }
@@ -128,7 +132,7 @@ private:
     
     // outputs a number of records to a file (no blanks)
     void outputRecords(ofstream &file, int numRecords) {
-        fstream db(dbFileName);
+        fstream db(dbFileName.c_str());
         for(int line = 0, records = 0; records < numRecords; line++) {
             // getRecord.ignoreBlanks is set to false because lineNum is not updated within the function
             // this avoids double printing lines with blanks before them
@@ -144,7 +148,7 @@ private:
     
     // import database settings/info
     void readConfig() {
-        ifstream config(configFileName);
+        ifstream config(configFileName.c_str());
         isOpen = false;
         
         if(config.is_open()) {
@@ -237,12 +241,14 @@ private:
     
     // export new database settings/info
     void writeConfig() {
-        ofstream config(configFileName);
+        ofstream config(configFileName.c_str());
         
         config << numRecords << endl;
         config << recordSize << endl;
         
-        for(string field: fields) {
+        int i;
+        for(i = 0; i < fields.size(); i++) {
+            string field = fields[i];
             config << field << endl;
         }
         config.close();
@@ -282,7 +288,7 @@ public:
     void addRecord(Record rec) {
         validateFileOperations();
         
-        fstream db(dbFileName);
+        fstream db(dbFileName.c_str());
         
         Record insertionPoint = Record();
         bool found = binarySearch(db, rec.getInstitutionName(), insertionPoint);
@@ -338,7 +344,7 @@ public:
         
         int lineNum = rec.getRecordNumber();
         
-        fstream db(dbFileName);
+        fstream db(dbFileName.c_str());
         db.seekp(lineNum*recordSize, ios::beg);
         db << emptyRecord();
         db.close();
@@ -360,7 +366,7 @@ public:
     Record findRecord(string universityName) {
         validateFileOperations();
         
-        fstream db(dbFileName);
+        fstream db(dbFileName.c_str());
         Record rec = Record();
         bool found = binarySearch(db, universityName, rec);
         db.close();
@@ -379,7 +385,9 @@ public:
     
     // prints fields (from config file) to the screen
     void printFields() {
-        for(string field: fields) {
+        int i;
+        for(i = 0; i < fields.size(); i++) {
+            string field = fields[i];
             cout << field << "\t";
         }
         cout << endl;
@@ -399,7 +407,7 @@ public:
         
         int lineNum = rec.getRecordNumber();
         
-        fstream db(dbFileName);
+        fstream db(dbFileName.c_str());
         db.seekp(lineNum*recordSize, ios::beg);
         db << rec.dbRecord();
         db.close();

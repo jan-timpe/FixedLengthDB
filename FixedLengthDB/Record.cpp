@@ -9,6 +9,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <algorithm>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -19,6 +21,12 @@ private:
     static const int MAX_INT_LEN = 6;
     static const int MAX_INT_VAL = 999999;
     static const int MAX_STR_LEN = 70;
+    
+    static string to_str(const int num) {
+        stringstream stm;
+        stm << num;
+        return stm.str();
+    }
     
     int recordNumber;
     string institutionName, primaryKey;
@@ -62,37 +70,37 @@ private:
     }
     
     string getSATVerbal25thFormatted(int colSize) {
-        string satVerb25 = to_string(satVerbal25th);
+        string satVerb25 = to_str(satVerbal25th);
         satVerb25.insert(satVerb25.end(), colSize-satVerb25.size(), ' ');
         return satVerb25;
     }
     
     string getSATVerbal75thFormatted(int colSize) {
-        string satVerb75 = to_string(satVerbal75th);
+        string satVerb75 = to_str(satVerbal75th);
         satVerb75.insert(satVerb75.end(), colSize-satVerb75.size(), ' ');
         return satVerb75;
     }
     
     string getSATMath25thFormatted(int colSize) {
-        string satMath25 = to_string(satMath25th);
+        string satMath25 = to_str(satMath25th);
         satMath25.insert(satMath25.end(), colSize-satMath25.size(), ' ');
         return satMath25;
     }
     
     string getSATMath75thFormatted(int colSize) {
-        string satMath75 = to_string(satMath75th);
+        string satMath75 = to_str(satMath75th);
         satMath75.insert(satMath75.end(), colSize-satMath75.size(), ' ');
         return satMath75;
     }
     
     string getNumSATSubmittedFormatted(int colSize) {
-        string satSub = to_string(numSATSubmitted);
+        string satSub = to_str(numSATSubmitted);
         satSub.insert(satSub.end(), colSize-satSub.size(), ' ');
         return satSub;
     }
     
     string getNumStudentsEnrolledFormatted(int colSize) {
-        string numEnrl = to_string(numEnrolled);
+        string numEnrl = to_str(numEnrolled);
         numEnrl.insert(numEnrl.end(), colSize-numEnrl.size(), ' ');
         return numEnrl;
     }
