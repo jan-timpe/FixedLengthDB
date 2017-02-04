@@ -11,12 +11,15 @@ $ cd FixedLengthDB
 ```
 
 Run the code with the following command
+```
+$ g++ -o fixedlength.exe main.cpp
+```
 
+Or, with C++11 support
 ```
 $ g++ -std=c++0x -o fixedlength.exe main.cpp -w -Wfatal-errors
 ```
-
-The command suppresses warnings and other non-fatal messages, and compiles with C++11 support.
+The command suppresses warnings and other non-fatal messages.
 
 ## Generate a clean Database file
 Navigate to the source directory
