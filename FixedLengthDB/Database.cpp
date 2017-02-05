@@ -312,7 +312,14 @@ public:
             
             // not guaranteed to be a blank line. if the new point is occupied, we need to rewrite the whole file (overflow)
             if(!insertionPoint.isBlank()) {
-                rewriteWithInsert(db, rec, insertionPoint.getRecordNumber());
+                int writeLine = insertionPoint.getRecordNumber();
+                if(rec < insertionPoint) {
+                    writeLine -= 1;
+                }
+                else {
+                    writeLine += 1;
+                }
+                rewriteWithInsert(db, rec, writeLine);
             }
         }
         
